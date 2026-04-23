@@ -26,6 +26,7 @@ class RegisterActions {
   }
 
   async submitSignupIdentity(user) {
+    await this.waitForLoginPage();
     await this.registerPage.elements.signupNameInput.fill(user.name);
     await this.registerPage.elements.signupEmailInput.fill(user.email);
     await this.registerPage.elements.signupButton.click();
@@ -71,6 +72,7 @@ class RegisterActions {
   }
 
   async deleteAccount() {
+    await this.registerPage.elements.deleteAccountLink.waitFor();
     await this.registerPage.elements.deleteAccountLink.click();
     await this.waitForAccountDeleted();
   }

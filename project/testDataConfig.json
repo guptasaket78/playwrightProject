@@ -1,7 +1,7 @@
 {
   "selectedEnvironment": "prod",
   "browserName": "chromium",
-  "runMode": "head",
+  "runMode": "headless",
   "explicitTimestamp": "",
   "signupDefaults": {
     "password": "Test@12345",

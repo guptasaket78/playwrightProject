@@ -8,8 +8,7 @@ test.beforeAll(async () => {
 });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/');
-  await page.waitForLoadState('domcontentloaded');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
 });
 
 export { test, expect };

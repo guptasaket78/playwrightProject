@@ -22,13 +22,17 @@ class LoginActions {
   }
 
   async openLogin() {
-    await this.page.goto('/login');
+    await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
     await this.waitForLoginPage();
   }
 
   async openHomeAndNavigateToLogin() {
-    await this.page.goto('/');
-    await this.loginPage.elements.signupLoginNavLink.click();
+    await this.page.goto('/', { waitUntil: 'domcontentloaded' });
+    await this.loginPage.elements.signupLoginNavLink.waitFor();
+    await Promise.all([
+      this.page.waitForURL('**/login'),
+      this.loginPage.elements.signupLoginNavLink.click(),
+    ]);
     await this.waitForLoginPage();
   }
 
@@ -37,7 +41,11 @@ class LoginActions {
   }
 
   async logout() {
-    await this.loginPage.elements.logoutLink.click();
+    await this.loginPage.elements.logoutLink.waitFor();
+    await Promise.all([
+      this.page.waitForURL('**/login'),
+      this.loginPage.elements.logoutLink.click(),
+    ]);
     await this.waitForLoginPage();
   }
 }

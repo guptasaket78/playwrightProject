@@ -7,7 +7,7 @@ const testDataConfig = JSON.parse(rawConfig);
 
 export const selectedEnvironment = testDataConfig.selectedEnvironment;
 export const browserName = testDataConfig.browserName || 'chromium';
-export const runMode = testDataConfig.runMode || 'headless';
+export const runMode = process.env.PW_RUN_MODE || testDataConfig.runMode || 'headless';
 export const isHeadless = runMode !== 'head';
 export const explicitTimestamp =
   process.env.TEST_DATA_TIMESTAMP || testDataConfig.explicitTimestamp || '';
