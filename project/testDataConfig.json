@@ -1,0 +1,25 @@
+{
+  "selectedEnvironment": "prod",
+  "browserName": "chromium",
+  "runMode": "head",
+  "explicitTimestamp": "",
+  "signupDefaults": {
+    "password": "Test@12345",
+    "day": "10",
+    "month": "5",
+    "year": "1996",
+    "firstName": "Playwright",
+    "lastName": "Tester",
+    "company": "Automation Labs",
+    "address1": "221B Baker Street",
+    "address2": "Suite 10",
+    "country": "India",
+    "state": "Karnataka",
+    "city": "Bengaluru",
+    "zipcode": "560001",
+    "mobileNumber": "9999999999"
+  },
+  "invalidLoginDefaults": {
+    "password": "WrongPassword123"
+  }
+}

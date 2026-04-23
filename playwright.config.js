@@ -1,5 +1,49 @@
 // @ts-check
 import { defineConfig, devices } from '@playwright/test';
+import {
+  environmentBaseUrls,
+  selectedEnvironment,
+} from './project/config/envConfig.js';
+import {
+  browserName,
+  isHeadless,
+  runMode,
+} from './project/config/testDataConfigReader.js';
+
+const baseURL = environmentBaseUrls[selectedEnvironment];
+
+if (!baseURL) {
+  throw new Error(
+    `Unsupported test environment "${selectedEnvironment}". Update project/config/testRunConfig.js.`
+  );
+}
+
+if (!['head', 'headless'].includes(runMode)) {
+  throw new Error(
+    `Unsupported runMode "${runMode}". Use "head" or "headless" in project/testDataConfig.json.`
+  );
+}
+
+if (!['chromium', 'firefox', 'webkit'].includes(browserName)) {
+  throw new Error(
+    `Unsupported browserName "${browserName}". Use "chromium", "firefox", or "webkit" in project/testDataConfig.json.`
+  );
+}
+
+const allProjects = [
+  {
+    name: 'chromium',
+    use: { ...devices['Desktop Chrome'] },
+  },
+  {
+    name: 'firefox',
+    use: { ...devices['Desktop Firefox'] },
+  },
+  {
+    name: 'webkit',
+    use: { ...devices['Desktop Safari'] },
+  },
+];
 
 /**
  * Read environment variables from file.
@@ -14,6 +58,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests',
+  testMatch: ['regressionSuites/**/*.spec.js', 'smoke/**/*.spec.js'],
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -22,54 +67,21 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['list'], ['html', { open: 'never' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    baseURL,
+    headless: isHeadless,
+    viewport: null,
+    launchOptions: {
+      args: ['--start-maximized'],
+    },
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+  projects: allProjects.filter((project) => project.name === browserName),
 
   /* Run your local dev server before starting the tests */
   // webServer: {
@@ -78,4 +90,3 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
 });
-
